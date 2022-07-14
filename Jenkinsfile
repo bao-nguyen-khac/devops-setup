@@ -1,16 +1,17 @@
 pipeline {
-    agent {
-        docker {
-            image 'node:16-alpine' 
-            args '-p 3000:3000' 
-        }
-    }
+    // agent {
+    //     docker {
+    //         image 'node:16-alpine' 
+    //         args '-p 3000:3000' 
+    //     }
+    // }
+    agent any
     stages {
-        // stage('Clone'){
-        //     steps {
-        //         git branch: 'main', url: 'https://github.com/bao-nguyen-khac/demo-jenkins.git'
-        //     }
-        // }
+        stage('Clone'){
+            steps {
+                git branch: 'main', url: 'https://github.com/bao-nguyen-khac/demo-jenkins.git'
+            }
+        }
         // stage('Build stage'){
         //     steps {
         //         withDockerRegistry(credentialsId: 'docker-hub', url: 'https://index.docker.io/v1/') {
