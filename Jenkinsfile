@@ -6,17 +6,18 @@ pipeline {
     //     }
     // }
     agent any
+    tools {nodejs "node"}
     stages {
-        // stage('Build') { 
-        //     steps {
-        //         sh 'npm install' 
-        //     }
-        // }
-        // stage('Test') {
-        //     steps {
-        //         sh 'npm test'
-        //     }
-        // }
+        stage('Build') { 
+            steps {
+                sh 'npm install' 
+            }
+        }
+        stage('Test') {
+            steps {
+                sh 'npm test'
+            }
+        }
         // stage('Push image'){
         //     steps {
         //         withDockerRegistry(credentialsId: 'docker-hub', url: 'https://index.docker.io/v1/') {
@@ -26,12 +27,12 @@ pipeline {
         //         }
         //     }
         // }
-        stage('Ssh k8s-master'){
-            steps{
-                sshagent(['ssh-k8s-master']) {
-                    sh 'ssh -o StrictHostKeyChecking=no -p 9922 -l ubuntu 61.28.232.236 kubectl scale deployment todo-app-backend --replicas 2'
-                }
-            }
-        }
+        // stage('Ssh k8s-master'){
+        //     steps{
+        //         sshagent(['ssh-k8s-master']) {
+        //             sh 'ssh -o StrictHostKeyChecking=no -p 9922 -l ubuntu 61.28.232.236 kubectl scale deployment todo-app-backend --replicas 2'
+        //         }
+        //     }
+        // }
     }
 }
