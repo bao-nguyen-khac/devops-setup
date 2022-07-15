@@ -29,7 +29,7 @@ pipeline {
         stage('Ssh k8s-master'){
             steps{
                 sshagent(['ssh-k8s-master']) {
-                    sh 'ssh -o StrictHostKeyChecking=no -p 9922 -l ubuntu 61.28.232.236 docker ps'
+                    sh 'ssh -o StrictHostKeyChecking=no -p 9922 -l ubuntu 61.28.232.236 kubectl scale deployment todo-app-backend --replicas 2'
                 }
             }
         }
