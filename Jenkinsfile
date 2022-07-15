@@ -7,12 +7,17 @@ pipeline {
     // }
     agent any
     stages {
-        stage('Clone'){
-            steps {
-                git branch: 'main', url: 'https://github.com/bao-nguyen-khac/demo-jenkins.git'
-            }
-        }
-        // stage('Build stage'){
+        // stage('Build') { 
+        //     steps {
+        //         sh 'npm install' 
+        //     }
+        // }
+        // stage('Test') {
+        //     steps {
+        //         sh 'npm test'
+        //     }
+        // }
+        // stage('Push image'){
         //     steps {
         //         withDockerRegistry(credentialsId: 'docker-hub', url: 'https://index.docker.io/v1/') {
         //             // some block
@@ -21,20 +26,10 @@ pipeline {
         //         }
         //     }
         // }
-        stage('Build') { 
-            steps {
-                sh 'npm install' 
+        stage('Ssh k8s-master'){
+            sshagent(['ssh-k8s-master']) {
+                sh 'ssh -o StrictHostKeyChecking=no -l ubuntu 61.28.232.236 docker ps'
             }
         }
-        stage('Test') {
-            steps {
-                sh 'npm test'
-            }
-        }
-        // stage('Deliver') {
-        //     steps {
-        //         sh 'npm start'
-        //     }
-        // }
     }
 }
