@@ -27,8 +27,10 @@ pipeline {
         //     }
         // }
         stage('Ssh k8s-master'){
-            sshagent(['ssh-k8s-master']) {
-                sh 'ssh -o StrictHostKeyChecking=no -l ubuntu 61.28.232.236 docker ps'
+            steps{
+                sshagent(['ssh-k8s-master']) {
+                    sh 'ssh -o StrictHostKeyChecking=no -l ubuntu 61.28.232.236 docker ps'
+                }
             }
         }
     }
