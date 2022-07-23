@@ -34,5 +34,10 @@ pipeline {
         //         }
         //     }
         // }
+        stage('Ssh k8s-worker1') {
+            steps{
+                ansiblePlaybook credentialsId: 'ssh-k8s-worker1', installation: 'Ansible', inventory: 'hosts', playbook: 'test.yaml'
+            }
+        }
     }
 }
