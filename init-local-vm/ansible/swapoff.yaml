@@ -1,0 +1,10 @@
+- hosts: k8sClusterServer
+  tasks:
+    - name: Disable swap
+      command: swapoff -a
+    
+    - name: Restart daemon
+      command: systemctl daemon-reload
+    
+    - name: Restart kubelet
+      command: systemctl restart kubelet

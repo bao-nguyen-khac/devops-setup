@@ -1,0 +1,7 @@
+#local_server ansible_host=127.0.0.1 ansible_connection=local
+[k8sClusterServer]
+192.168.56.101 ansible_user=root ansible_password=12345
+192.168.56.102 ansible_user=root ansible_password=12345
+192.168.56.103 ansible_user=root ansible_password=12345
+[opsServer]
+192.168.56.110 ansible_user=root ansible_password=12345

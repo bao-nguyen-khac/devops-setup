@@ -1,6 +1,0 @@
-- hosts: all
-  tasks:
-    - name: Test ping
-      ping:
-    - ansible.builtin.debug:
-        msg: Susscess

@@ -1,0 +1,47 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+    servers=[
+      {
+        :hostname => "ops-1",
+        :box => "generic/ubuntu1804",
+        :ip => "192.168.56.110",
+        :cpus => "2",
+        :memory => "2048",
+      },
+      # {
+      #   :hostname => "worker-1",
+      #   :box => "generic/ubuntu1804",
+      #   :ip => "192.168.56.102",
+      #   :cpus => "1",
+      #   :memory => "1024",
+      # },
+      # {
+      #   :hostname => "worker-2",
+      #   :box => "generic/ubuntu1804",
+      #   :ip => "192.168.56.103",
+      #   :cpus => "1",
+      #   :memory => "1024",
+      # }
+    ]
+    servers.each do |machine|
+      config.vm.define machine[:hostname] do |node|
+          node.vm.box = machine[:box]
+          node.vm.hostname = machine[:hostname]
+          node.vm.network "private_network", ip: machine[:ip]
+  
+          node.vm.provider "virtualbox" do |vb|
+            vb.name = machine[:hostname]
+            vb.cpus = machine[:cpus]
+            vb.memory = machine[:memory]
+          end
+          node.vm.provision "shell", inline: <<-SHELL 
+            echo "root:12345" | chpasswd
+            sed -i 's/^PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config
+            systemctl reload sshd
+          SHELL
+      end
+    end
+  end
+  

@@ -1,0 +1,76 @@
+- hosts: all
+  tasks:
+    - name: apt update
+      apt:
+        update_cache: yes
+
+    - name: Install prerequisites for Docker repository
+      apt:
+        pkg:
+        - apt-transport-https
+        - ca-certificates
+        - curl
+        - gnupg2
+        - software-properties-common
+
+    - name: add docker apt key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: add docker apt repo
+      apt_repository:
+        repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable"
+        state: present
+        update_cache: yes
+      
+    - name: install docker and it's dependencies
+      apt:
+        pkg:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+        state: present
+
+    - name: start and enable docker daemon
+      service:
+        name: docker
+        state: started
+        enabled: yes
+    - name: Add an apt signing key for Kubernetes
+      apt_key:
+        url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+        state: present
+    
+- hosts: k8sClusterServer
+  tasks:
+    - name: Adding apt repository for Kubernetes
+      apt_repository:
+        repo: deb https://apt.kubernetes.io/ kubernetes-xenial main
+        state: present
+        filename: kubernetes.list
+
+    - name: Install Kubernetes binaries
+      apt: 
+        name: "{{ packages }}"
+        state: present
+        update_cache: yes
+      vars:
+        packages:
+          - kubelet 
+          - kubeadm 
+          - kubectl
+
+    - name: Disable swap
+      command: swapoff -a
+
+    - name: fix container runtime
+      file:
+        state: absent
+        path: /etc/containerd/config.toml
+    
+    - name: fix container runtime
+      service:
+        name: containerd
+        state: restarted
+        enabled: yes
