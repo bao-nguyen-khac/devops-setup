@@ -20,7 +20,7 @@
 
     - name: add docker apt repo
       apt_repository:
-        repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable"
+        repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable"
         state: present
         update_cache: yes
       
@@ -37,13 +37,17 @@
         name: docker
         state: started
         enabled: yes
+    # - name: install docker compose
+    #   service:
+    #     command: sudo apt-get install docker-compose-plugin
+    
+- hosts: all
+  tasks:
     - name: Add an apt signing key for Kubernetes
       apt_key:
         url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
         state: present
-    
-- hosts: k8sClusterServer
-  tasks:
+
     - name: Adding apt repository for Kubernetes
       apt_repository:
         repo: deb https://apt.kubernetes.io/ kubernetes-xenial main
