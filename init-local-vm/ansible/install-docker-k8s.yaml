@@ -37,9 +37,10 @@
         name: docker
         state: started
         enabled: yes
-    # - name: install docker compose
-    #   service:
-    #     command: sudo apt-get install docker-compose-plugin
+    - name: install docker compose
+      apt:
+        pkg:
+          - docker-compose-plugin
     
 - hosts: all
   tasks:
