@@ -1,0 +1,65 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: thumbor
+data:
+  thumbor.conf: |
+    UPLOAD_ENABLED = True
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: thumbor-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: thumbor
+  template:
+    metadata:
+      labels:
+        app: thumbor
+    spec:
+      containers:
+        - name: thumbor
+          image: minimalcompact/thumbor:6.7.5
+          command: ["thumbor"]
+          args: ["-p", "80", "-c", "/conf/thumbor.conf"]
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: thumbor-conf
+              mountPath: /conf
+      volumes:
+        - name: thumbor-conf
+          configMap:
+            name: thumbor
+---            
+apiVersion: v1
+kind: Service
+metadata:
+  name: thumbor-service
+spec:
+  selector:
+    app: thumbor
+  ports:
+    - port: 80
+      targetport: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: thumbor-ingress
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: thumbor.baonk.site
+    http:
+      paths:
+      - backend:
+          service:
+            name: thumbor-service
+            port:
+              number: 80
+        path: /
+        pathType: Prefix
