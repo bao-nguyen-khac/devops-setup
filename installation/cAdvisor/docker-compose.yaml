@@ -1,0 +1,50 @@
+version: "3.4"
+services:
+  cadvisor:
+    image: gcr.io/google-containers/cadvisor:latest
+    container_name: cadvisor
+    #ports:
+    # - 8080:8080
+    volumes:
+    - /:/rootfs:ro
+    - /var/run:/var/run:rw
+    - /sys:/sys:ro
+    - /var/lib/docker/:/var/lib/docker:ro
+  
+  node-exporter:
+    image: prom/node-exporter:v1.4.0
+    container_name: node-exporter
+    restart: unless-stopped
+    #ports:
+    # - 9100:9100
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.rootfs=/rootfs'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+    
+  prometheus:
+    image: prom/prometheus:v2.39.1
+    #ports:
+    #- 9090:9090
+    command:
+    - --config.file=/etc/prometheus/prometheus.yml
+    volumes:
+    - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    depends_on:
+    - cadvisor
+    - node-exporter
+  grafana:
+    image: grafana/grafana:9.2.3
+    ports:
+    - 8003:3000
+    user: "1000"
+    volumes:
+    - ./data:/var/lib/grafana
+    restart: always
+    depends_on:
+    - prometheus
