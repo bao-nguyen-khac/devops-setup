@@ -42,9 +42,9 @@ services:
     image: grafana/grafana:9.2.3
     ports:
     - 8003:3000
-    user: "1000"
+    user: "$UID:$GID"
     volumes:
-    - ./data:/var/lib/grafana
+    - /data/grafana:/var/lib/grafana
     restart: always
     depends_on:
     - prometheus
