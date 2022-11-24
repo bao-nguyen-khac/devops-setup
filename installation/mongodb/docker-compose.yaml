@@ -25,3 +25,7 @@ services:
       ME_CONFIG_BASICAUTH_PASSWORD: $MONGO_EXPRESS_PASSWORD
 volumes: 
   mongodb:
+# networks:
+#   default:
+#     name: main
+#     external: true
