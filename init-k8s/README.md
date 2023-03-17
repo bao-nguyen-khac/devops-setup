@@ -1,5 +1,5 @@
-# Steps to init k8s cluster (include init k8s dashboard)
-## After create local VM with Vagrant and install docker k8s with Ansible: 
+## Steps to launch K8s cluster (include K8s dashboard)
+### After create local VM with Vagrant and install docker k8s with Ansible: 
 ### In master node
 - kubeadm init --apiserver-advertise-address=192.168.56.101 --pod-network-cidr=172.16.0.0/16
 - vi /etc/systemd/system/kubelet.service.d/10-kubeadm.conf => add '--node-ip 192.168.56.101' to KUBELET_CONFIG_ARGS

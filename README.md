@@ -1,7 +1,7 @@
-## Initialize virtual machine with Vagrant
-## Automation install docker vs k8s with Ansible
-## K8s cluster initialization
-## Install jenkins, prometheus vs grafana, nginx-ingress in k8s with helm
+### Launch a virtual machine in local with Vagrant [here](https://github.com/bao-nguyen-khac/devops-setup/tree/main/init-local-vm/vagrant)
+### Automation install Docker and K8s with Ansible [here](https://github.com/bao-nguyen-khac/devops-setup/tree/main/init-k8s/ansible)
+### Cluster initialization on K8s [here](https://github.com/bao-nguyen-khac/devops-setup/tree/main/init-k8s)
+### Install jenkins, prometheus vs grafana, nginx-ingress,.. on K8s with Helm and on Docker [here](https://github.com/bao-nguyen-khac/devops-setup/tree/main/installation)
 
 |                                        Dashboard                                        |
 | :--------------------------------------------------------------------------------: | 
