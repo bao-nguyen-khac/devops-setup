@@ -1,21 +1,21 @@
 version: '3'
 services:
   mysqldb:
-    image: mysql:5.7
+    image: mysql:latest
     environment:
       - MYSQL_ROOT_PASSWORD=admin12345
-      - MYSQL_DATABASE=spring-tutorial
+      - MYSQL_DATABASE=nestjs
     ports:
       - 3306:3306
     volumes:
       - db-mysql:/var/lib/mysql
-  adminer:
-    depends_on:
-      - mysqldb
-    image: adminer
-    restart: always
-    ports:
-      - 8080:8080
+  # adminer:
+  #   depends_on:
+  #     - mysqldb
+  #   image: adminer
+  #   restart: always
+  #   ports:
+  #     - 8080:8080
 volumes:
   db-mysql:
 
