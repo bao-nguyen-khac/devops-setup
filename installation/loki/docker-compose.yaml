@@ -1,4 +1,3 @@
----
 version: "3"
 
 networks:
@@ -45,16 +44,29 @@ services:
     networks:
       <<: *loki-dns
 
-  alloy:
-    image: grafana/alloy:latest
+  # alloy:
+  #   image: grafana/alloy:latest
+  #   volumes:
+  #     - ./alloy-file-config.yaml:/etc/alloy/config.alloy:ro
+  #     - /var/run/docker.sock:/var/run/docker.sock
+  #   command:  run --server.http.listen-addr=0.0.0.0:12345 --storage.path=/var/lib/alloy/data /etc/alloy/config.alloy
+  #   ports:
+  #     - 12345:12345
+  #   depends_on:
+  #     - gateway
+  #   networks:
+  #     - loki
+  
+  promtail:
+    image: grafana/promtail:2.9.2
     volumes:
-      - ./alloy-local-config.yaml:/etc/alloy/config.alloy:ro
-      - /var/run/docker.sock:/var/run/docker.sock
-    command:  run --server.http.listen-addr=0.0.0.0:12345 --storage.path=/var/lib/alloy/data /etc/alloy/config.alloy
+      - ./promtail.yaml:/etc/promtail/promtail.yaml
+      - ./loki/:/var/log/
+      - /home/source_code/portal/api_nghean/public/logs/api:/var/log/api-portal/
+      - /home/source_code/portal/api_nghean/public/logs/errors:/var/log/api-portal/app-errors/
     ports:
-      - 12345:12345
-    depends_on:
-      - gateway
+      - 9080
+    command: -config.file=/etc/promtail/promtail.yaml
     networks:
       - loki
 
@@ -204,8 +216,15 @@ services:
       - loki
   
 
-  flog:
-    image: mingrammer/flog
-    command: -f json -d 200ms -l
-    networks:
-      - loki
+  # log-generator:
+  #   image: mingrammer/flog
+  #   command:
+  #     - --loop
+  #     - --format=json
+  #     - --number=10 # number of log lines to generate per second
+  #     - --delay=5000ms # delay between log lines
+  #     - --output=/var/log/generated-logs.txt
+  #     - --overwrite
+  #     - --type=log
+  #   volumes:
+  #     - ./loki/:/var/log/
