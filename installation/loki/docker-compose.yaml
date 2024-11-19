@@ -57,18 +57,18 @@ services:
   #   networks:
   #     - loki
   
-  promtail:
-    image: grafana/promtail:2.9.2
-    volumes:
-      - ./promtail.yaml:/etc/promtail/promtail.yaml
-      - ./loki/:/var/log/
-      - /home/source_code/portal/api_nghean/public/logs/api:/var/log/api-portal/
-      - /home/source_code/portal/api_nghean/public/logs/errors:/var/log/api-portal/app-errors/
-    ports:
-      - 9080
-    command: -config.file=/etc/promtail/promtail.yaml
-    networks:
-      - loki
+  # promtail:
+  #   image: grafana/promtail:2.9.2
+  #   volumes:
+  #     - ./promtail.yaml:/etc/promtail/promtail.yaml
+  #     - ./loki/:/var/log/
+  #     - /home/source_code/portal/api_nghean/public/logs/api:/var/log/api-portal/
+  #     - /home/source_code/portal/api_nghean/public/logs/errors:/var/log/api-portal/app-errors/
+  #   ports:
+  #     - 9080
+  #   command: -config.file=/etc/promtail/promtail.yaml
+  #   networks:
+  #     - loki
 
   minio:
     image: minio/minio
