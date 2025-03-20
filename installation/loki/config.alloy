@@ -1,0 +1,53 @@
+local.file_match "tmplogs" {
+    path_targets = [{"__path__" = "/var/log/alloy/mono-log.txt"}]
+}
+
+loki.source.file "local_files" {
+    targets    = local.file_match.tmplogs.targets
+    forward_to = [loki.process.parse_data.receiver]
+}
+
+loki.process "parse_data" {
+
+    stage.match {
+        selector = `{line =~ ".*REQUEST:.*"}`
+        action   = "keep"
+        stage.regex {
+            expression = `^\[(?P<time>.*?)\] .(?P<level>\w+): (?P<method>\w+) (?P<url>.*?) \[Authorization\]: (?P<authorization>.*?) \[\] (?P<uid>\{.*?\})$`
+        }
+
+        stage.template {
+            source   = "message"
+            template = `{"time": "{{.time}}", "level": "{{.level}}", "method": "{{.method}}", "url": "{{.url}}", "authorization": "{{.authorization}}", "uid": {{.uid}}}`
+        }
+
+        stage.output {
+            source = "message"
+        }
+    }
+
+    stage.match {
+        selector = `{line =~ ".*RESPONSE:.*"}`
+        action   = "keep"
+        stage.regex {
+            expression = `^\[(?P<time>.*?)\] .(?P<level>\w+): (?P<status_code>\d+) (?P<status_text>\w+) (?P<response_body>\{[\s\S]*?\} }) \[\] (?P<uid>\{[\s\S]*?\})$`
+        }
+
+        stage.template {
+            source   = "message"
+            template = `{"time": "{{.time}}", "level": "{{.level}}", "status_code": "{{.status_code}}", "response_body": {{.response_body}}}, "uid": {{.uid}}}`
+        }
+
+        stage.output {
+            source = "message"
+        }
+    }
+
+    forward_to = [loki.write.local_loki.receiver]
+}
+
+loki.write "local_loki" {
+    endpoint {
+        url = "http://gateway:3100/loki/api/v1/push"
+    }
+}

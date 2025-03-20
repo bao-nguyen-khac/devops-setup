@@ -44,18 +44,19 @@ services:
     networks:
       <<: *loki-dns
 
-  # alloy:
-  #   image: grafana/alloy:latest
-  #   volumes:
-  #     - ./alloy-file-config.yaml:/etc/alloy/config.alloy:ro
-  #     - /var/run/docker.sock:/var/run/docker.sock
-  #   command:  run --server.http.listen-addr=0.0.0.0:12345 --storage.path=/var/lib/alloy/data /etc/alloy/config.alloy
-  #   ports:
-  #     - 12345:12345
-  #   depends_on:
-  #     - gateway
-  #   networks:
-  #     - loki
+  alloy:
+    image: grafana/alloy:latest
+    volumes:
+      - ./config.alloy:/etc/alloy/config.alloy:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./loki:/var/log/alloy/
+    command:  run --server.http.listen-addr=0.0.0.0:12345 --storage.path=/var/lib/alloy/data /etc/alloy/config.alloy
+    ports:
+      - 12345:12345
+    depends_on:
+      - gateway
+    networks:
+      - loki
   
   # promtail:
   #   image: grafana/promtail:2.9.2
@@ -118,8 +119,6 @@ services:
             url: http://gateway:3100
             jsonData:
               httpHeaderName1: "X-Scope-OrgID"
-            secureJsonData:
-              httpHeaderValue1: "tenant1"
         EOF
         /run.sh
     ports:
@@ -216,15 +215,31 @@ services:
       - loki
   
 
-  # log-generator:
-  #   image: mingrammer/flog
-  #   command:
-  #     - --loop
-  #     - --format=json
-  #     - --number=10 # number of log lines to generate per second
-  #     - --delay=5000ms # delay between log lines
-  #     - --output=/var/log/generated-logs.txt
-  #     - --overwrite
-  #     - --type=log
-  #   volumes:
-  #     - ./loki/:/var/log/
+  log-generator:
+    image: mingrammer/flog
+    command:
+      - --loop
+      - --format=json
+      - --number=5 # number of log lines to generate per second
+      - --delay=5000ms # delay between log lines
+      - --output=/var/log/generated-logs.txt
+      - --overwrite
+      - --type=log
+    volumes:
+      - ./loki/:/var/log/
+    networks:
+      - loki
+
+  logrotate:
+    image: blacklabelops/logrotate:latest  # Use the pre-built logrotate image
+    container_name: logrotate
+    volumes:
+      - ./loki:/var/log/alloy  # Share the log directory with the alloy container
+      # - ./logrotate.conf:/etc/logrotate.d/myapp  # Mount the logrotate configuration
+    environment:
+      - LOGS_DIRECTORIES=/var/log/alloy
+      - LOGROTATE_INTERVAL=hourly
+      - LOG_FILE=/logs/cron.log
+    restart: unless-stopped
+    depends_on:
+      - alloy
